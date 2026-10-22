@@ -162,5 +162,3 @@ automatic-drug-reminder/
 ├── .gitignore
 ├── requirements.txt
 └── README.md
-
-Note: This is an example structure. Modify the folders and filenames according to your actual repository.
