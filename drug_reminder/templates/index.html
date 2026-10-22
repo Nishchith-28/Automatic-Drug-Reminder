@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Dosely — automatic drug reminders{% endblock %}
+{% block content %}
+<section class="hero">
+  <span class="eyebrow">doctor → patient → guardian</span>
+  <h1>Prescriptions that follow through, even when no one's watching the clock.</h1>
+  <p class="lede">A doctor writes the prescription once. Dosely reminds the patient at every dose, and if a dose gets missed, it tells the guardian automatically — no one has to chase anyone.</p>
+  <div class="hero-ctas">
+    <a href="{{ url_for('register') }}" class="btn-solid">Create an account</a>
+    <a href="{{ url_for('login') }}" class="btn-ghost">I already have one</a>
+  </div>
+</section>
+
+<div class="role-strip">
+  <div class="card">
+    <div class="role-num">01 · Doctor</div>
+    <h3>Write it once</h3>
+    <p class="muted">Enter the medicine, dosage, exact dose times and how many days it runs. Attach the scanned prescription if you have one.</p>
+  </div>
+  <div class="card">
+    <div class="role-num">02 · Patient</div>
+    <h3>Get reminded, not nagged</h3>
+    <p class="muted">A reminder appears right when a dose is due, with three honest options: Taken, remind me later, or not taken.</p>
+  </div>
+  <div class="card">
+    <div class="role-num">03 · Guardian</div>
+    <h3>Step in only when it matters</h3>
+    <p class="muted">If a dose is marked "not taken," or goes unanswered too long, the linked guardian is alerted right away.</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Guardian dashboard — Dosely{% endblock %}
+{% block content %}
+
+<h1>Hi {{ current_user.name }}</h1>
+<p class="muted" style="margin-bottom:22px">You'll see an alert here the moment a linked patient misses a dose or doesn't respond in time.</p>
+
+<div id="alert-stack" data-endpoint="{{ url_for('api_alerts_unread') }}"></div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <div class="section-head"><h2>People you're watching</h2></div>
+    {% if patients %}
+      <ul class="list-plain">
+        {% for p in patients %}
+          <li><strong>{{ p.name }}</strong><br><small class="muted">{{ p.email }}</small></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <h3>Not linked to anyone yet</h3>
+        <p>Ask the patient to add your email under their "Guardians" page.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="section-head"><h2>Alert history</h2></div>
+    {% if alerts %}
+      <ul class="list-plain">
+        {% for a in alerts[:12] %}
+          <li>
+            <div style="display:flex; justify-content:space-between; gap:10px; align-items:start">
+              <span>{{ a.message }}</span>
+              {% if not a.is_read %}<span class="badge badge-missed">new</span>{% endif %}
+            </div>
+            <small class="muted mono">{{ a.created_at }}</small>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state"><h3>No alerts yet — good sign</h3></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  Dosely.initGuardianAlerts({
+    unreadUrl: "{{ url_for('api_alerts_unread') }}",
+    readUrlTemplate: "{{ url_for('api_alert_read', alert_id=0) }}",
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Create account — Dosely{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="card">
+    <h1 style="font-size:1.5rem">Create your account</h1>
+    <p class="muted" style="margin-bottom:22px">Pick the role that matches you — it decides what your dashboard looks like.</p>
+    <form method="POST" action="{{ url_for('register') }}" novalidate>
+      <div class="field">
+        <label for="role">I am a</label>
+        <div class="role-picker">
+          <label class="role-option">
+            <input type="radio" name="role" value="doctor" {{ 'checked' if form.get('role')=='doctor' }} required>
+            <span class="role-card">Doctor</span>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="patient" {{ 'checked' if form.get('role')=='patient' or not form.get('role') }}>
+            <span class="role-card">Patient</span>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="guardian" {{ 'checked' if form.get('role')=='guardian' }}>
+            <span class="role-card">Guardian</span>
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" value="{{ form.get('name','') }}" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ form.get('email','') }}" required>
+      </div>
+      <div class="field">
+        <label for="phone">Phone <span class="hint" style="display:inline">(optional, for your records)</span></label>
+        <input type="tel" id="phone" name="phone" value="{{ form.get('phone','') }}">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="6" required>
+      </div>
+      <button type="submit" class="btn-solid btn-block">Create account</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

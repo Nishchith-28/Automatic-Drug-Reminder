@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}My prescriptions — Dosely{% endblock %}
+{% block content %}
+
+<h1>My prescriptions</h1>
+<p class="muted" style="margin-bottom:24px">Everything a doctor has prescribed you, newest first.</p>
+
+{% if prescriptions %}
+  <div class="grid" style="gap:16px">
+    {% for p in prescriptions %}
+      <div class="card">
+        <div class="section-head" style="margin-bottom:8px">
+          <h2 style="margin:0">{{ p.medicine_name }}</h2>
+          <span class="badge badge-{{ p.status }}"><span class="badge-dot"></span>{{ p.status }}</span>
+        </div>
+        <p class="muted" style="margin-bottom:14px">Prescribed by Dr. {{ p.doctor_name }} on {{ p.created_at[:10] }}</p>
+
+        <div class="grid grid-3" style="gap:12px; margin-bottom:12px">
+          <div><small class="muted">Dosage</small><br><strong>{{ p.dosage or "—" }}</strong></div>
+          <div><small class="muted">Dose times</small><br><strong class="mono">{{ p.times | replace('["','') | replace('"]','') | replace('","', ', ') }}</strong></div>
+          <div><small class="muted">Course</small><br><strong>{{ p.start_date }} · {{ p.duration_days }} days</strong></div>
+        </div>
+
+        {% if p.instructions %}
+          <p style="margin-bottom:12px"><small class="muted">Instructions</small><br>{{ p.instructions }}</p>
+        {% endif %}
+
+        {% if p.file_path %}
+          <a href="{{ url_for('static', filename=p.file_path) }}" target="_blank" class="file-chip">View attached file</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card empty-state">
+    <h3>No prescriptions yet</h3>
+    <p>Ask your doctor to add one using the email you registered with.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

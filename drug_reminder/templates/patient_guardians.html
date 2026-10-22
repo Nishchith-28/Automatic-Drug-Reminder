@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Guardians — Dosely{% endblock %}
+{% block content %}
+
+<h1>Guardians</h1>
+<p class="muted" style="margin-bottom:24px">Link someone you trust — they'll be alerted automatically if you mark a dose "not taken," or don't respond to a reminder in time.</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2>Add a guardian</h2>
+    <form method="POST" action="{{ url_for('patient_guardians') }}" novalidate>
+      <div class="field">
+        <label for="guardian_email">Guardian's email</label>
+        <input type="email" id="guardian_email" name="guardian_email" required placeholder="they must already have a guardian account">
+      </div>
+      <button type="submit" class="btn-solid">Link guardian</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Currently linked</h2>
+    {% if guardians %}
+      <ul class="list-plain">
+        {% for g in guardians %}
+          <li><strong>{{ g.name }}</strong><br><small class="muted">{{ g.email }}</small></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state"><h3>No one linked yet</h3></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

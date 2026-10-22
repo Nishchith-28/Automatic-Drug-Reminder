@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.name }} — Dosely{% endblock %}
+{% block content %}
+
+<div class="section-head">
+  <div>
+    <h1>{{ patient.name }}</h1>
+    <p class="muted" style="margin:0">{{ patient.email }}{% if patient.phone %} · {{ patient.phone }}{% endif %}</p>
+  </div>
+  <a href="{{ url_for('doctor_prescribe') }}" class="btn-solid">+ New prescription</a>
+</div>
+
+<div class="card">
+  <div class="section-head"><h2>Prescriptions you've written</h2></div>
+  {% if prescriptions %}
+    <table>
+      <thead><tr><th>Medicine</th><th>Times</th><th>Course</th><th>Status</th><th>File</th><th></th></tr></thead>
+      <tbody>
+      {% for p in prescriptions %}
+        <tr>
+          <td><strong>{{ p.medicine_name }}</strong><br><small class="muted">{{ p.dosage }}</small></td>
+          <td class="mono">{{ p.times | replace('["','') | replace('"]','') | replace('","', ', ') }}</td>
+          <td>{{ p.start_date }} · {{ p.duration_days }}d</td>
+          <td><span class="badge badge-{{ p.status }}"><span class="badge-dot"></span>{{ p.status }}</span></td>
+          <td>
+            {% if p.file_path %}
+              <a href="{{ url_for('static', filename=p.file_path) }}" target="_blank" class="file-chip">View file</a>
+            {% else %}
+              <small class="muted">—</small>
+            {% endif %}
+          </td>
+          <td>
+            {% if p.status == 'active' %}
+            <form method="POST" action="{{ url_for('doctor_stop_prescription', prescription_id=p.id) }}" onsubmit="return confirm('Stop this prescription?');">
+              <button type="submit" class="btn-danger-sm">Stop</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state">
+      <h3>No prescriptions for this patient yet</h3>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

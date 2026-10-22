@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Doctor dashboard — Dosely{% endblock %}
+{% block content %}
+
+<div class="section-head">
+  <h1>Welcome back, Dr. {{ current_user.name }}</h1>
+  <a href="{{ url_for('doctor_prescribe') }}" class="btn-solid">+ New prescription</a>
+</div>
+
+<div class="grid grid-3" style="margin-bottom:28px">
+  <div class="card stat">
+    <span class="num">{{ patients|length }}</span>
+    <span class="label">Patients under your care</span>
+  </div>
+  <div class="card stat">
+    <span class="num">{{ prescriptions|selectattr('status','equalto','active')|list|length }}</span>
+    <span class="label">Active prescriptions</span>
+  </div>
+  <div class="card stat">
+    <span class="num">{{ prescriptions|length }}</span>
+    <span class="label">Prescriptions written total</span>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <div class="section-head"><h2>Your patients</h2></div>
+    {% if patients %}
+      <ul class="list-plain">
+        {% for p in patients %}
+          <li style="display:flex; justify-content:space-between; align-items:center">
+            <div>
+              <strong>{{ p.name }}</strong><br>
+              <small class="muted">{{ p.email }}</small>
+            </div>
+            <a href="{{ url_for('doctor_view_patient', patient_id=p.id) }}" class="btn-ghost-sm">View history</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <h3>No patients yet</h3>
+        <p>Write your first prescription to a patient's registered email to get started.</p>
+        <a href="{{ url_for('doctor_prescribe') }}" class="btn-solid-sm">New prescription</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="section-head"><h2>Recent prescriptions</h2></div>
+    {% if prescriptions %}
+      <table>
+        <thead><tr><th>Medicine</th><th>Patient</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for p in prescriptions[:8] %}
+          <tr>
+            <td><strong>{{ p.medicine_name }}</strong><br><small class="muted">{{ p.dosage }}</small></td>
+            <td>{{ p.patient_name }}</td>
+            <td><span class="badge badge-{{ p.status }}"><span class="badge-dot"></span>{{ p.status }}</span></td>
+            <td>
+              {% if p.status == 'active' %}
+              <form method="POST" action="{{ url_for('doctor_stop_prescription', prescription_id=p.id) }}" onsubmit="return confirm('Stop this prescription? No further reminders will be sent.');">
+                <button type="submit" class="btn-danger-sm">Stop</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <h3>Nothing prescribed yet</h3>
+        <p>Prescriptions you write will show up here.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

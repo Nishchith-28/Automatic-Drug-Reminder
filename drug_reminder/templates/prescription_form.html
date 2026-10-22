@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}New prescription — Dosely{% endblock %}
+{% block content %}
+
+<div style="max-width:640px; margin:0 auto">
+  <h1>Write a new prescription</h1>
+  <p class="muted" style="margin-bottom:24px">The patient must already have a Dosely account — reminders are scheduled the moment you save this.</p>
+
+  <div class="card">
+    <form method="POST" action="{{ url_for('doctor_prescribe') }}" enctype="multipart/form-data" novalidate>
+
+      <div class="field">
+        <label for="patient_email">Patient's email</label>
+        <input type="email" id="patient_email" name="patient_email" value="{{ form.get('patient_email','') }}" required>
+        <span class="hint">Must match the email the patient registered with.</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="medicine_name">Medicine name</label>
+          <input type="text" id="medicine_name" name="medicine_name" value="{{ form.get('medicine_name','') }}" required placeholder="e.g. Amoxicillin">
+        </div>
+        <div class="field">
+          <label for="dosage">Dosage</label>
+          <input type="text" id="dosage" name="dosage" value="{{ form.get('dosage','') }}" placeholder="e.g. 500mg, 1 tablet">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="times">Dose times</label>
+        <input type="text" id="times" name="times" value="{{ form.get('times','') }}" required placeholder="08:00, 14:00, 20:00">
+        <span class="hint">24-hour clock, comma-separated. A reminder fires at each time, every day of the course.</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="start_date">Start date</label>
+          <input type="date" id="start_date" name="start_date" value="{{ form.get('start_date','') }}" required>
+        </div>
+        <div class="field">
+          <label for="duration_days">Course length (days)</label>
+          <input type="text" id="duration_days" name="duration_days" value="{{ form.get('duration_days','') }}" required placeholder="e.g. 7">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="instructions">Instructions <span class="hint" style="display:inline">(optional)</span></label>
+        <textarea id="instructions" name="instructions" placeholder="e.g. Take after food. Avoid dairy within 2 hours.">{{ form.get('instructions','') }}</textarea>
+      </div>
+
+      <div class="field">
+        <label for="prescription_file">Attach scanned prescription <span class="hint" style="display:inline">(optional — PDF, PNG or JPG)</span></label>
+        <input type="file" id="prescription_file" name="prescription_file" accept=".pdf,.png,.jpg,.jpeg">
+      </div>
+
+      <button type="submit" class="btn-solid btn-block">Save & schedule reminders</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

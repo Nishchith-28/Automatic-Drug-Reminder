@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Automatic Drug Reminder{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="{{ url_for('index') }}">
+    <span class="brand-mark" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </span>
+    Dosely
+  </a>
+
+  <nav class="topnav">
+    {% if current_user %}
+      {% if current_user.role == 'doctor' %}
+        <a href="{{ url_for('doctor_dashboard') }}" class="{{ 'active' if request.endpoint == 'doctor_dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('doctor_prescribe') }}" class="{{ 'active' if request.endpoint == 'doctor_prescribe' }}">New prescription</a>
+      {% elif current_user.role == 'patient' %}
+        <a href="{{ url_for('patient_dashboard') }}" class="{{ 'active' if request.endpoint == 'patient_dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('patient_prescriptions') }}" class="{{ 'active' if request.endpoint == 'patient_prescriptions' }}">My prescriptions</a>
+        <a href="{{ url_for('patient_guardians') }}" class="{{ 'active' if request.endpoint == 'patient_guardians' }}">Guardians</a>
+      {% elif current_user.role == 'guardian' %}
+        <a href="{{ url_for('guardian_dashboard') }}" class="{{ 'active' if request.endpoint == 'guardian_dashboard' }}">Dashboard</a>
+      {% endif %}
+      <span class="nav-sep"></span>
+      <span class="nav-user">{{ current_user.name }} <em>{{ current_user.role }}</em></span>
+      <a href="{{ url_for('logout') }}" class="btn-ghost-sm">Log out</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Log in</a>
+      <a href="{{ url_for('register') }}" class="btn-solid-sm">Get started</a>
+    {% endif %}
+  </nav>
+</header>
+
+<main class="page">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="pagefoot">
+  <span>Dosely — automatic drug reminder</span>
+  <span class="pagefoot-muted">Reminders check in every 15s while this tab is open · guardian alerts fire automatically on a missed dose</span>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

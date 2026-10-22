@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}My dashboard — Dosely{% endblock %}
+{% block content %}
+
+<div class="section-head">
+  <h1>Hi {{ current_user.name }}</h1>
+</div>
+
+<div id="reminder-stack" data-endpoint="{{ url_for('api_reminders_due') }}"></div>
+
+<div class="grid grid-3" style="margin-bottom:28px">
+  <div class="card stat">
+    <span class="num">{{ active_count }}</span>
+    <span class="label">Active prescriptions</span>
+  </div>
+  <div class="card stat">
+    <span class="num">{{ timeline|selectattr('status','equalto','taken')|list|length }}/{{ timeline|length }}</span>
+    <span class="label">Doses taken today</span>
+  </div>
+  <div class="card stat">
+    <span class="num">{{ guardians|length }}</span>
+    <span class="label">Guardians watching</span>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:24px">
+  <div class="section-head"><h2>Today's schedule</h2></div>
+  {% if timeline %}
+    <div class="timeline-wrap">
+      <div class="timeline">
+        {% for node in timeline %}
+          <div class="timeline-node {{ node.status }}">
+            <div class="timeline-dot">
+              {% if node.status == 'taken' %}✓{% elif node.status == 'missed' %}✕{% elif node.status == 'due' %}!{% else %}·{% endif %}
+            </div>
+            <div class="timeline-time">{{ node.time }}</div>
+            <div class="timeline-med">{{ node.medicine_name }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>No doses scheduled for today</h3>
+      <p>Once a doctor writes you a prescription, today's doses will line up here.</p>
+    </div>
+  {% endif %}
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <div class="section-head">
+      <h2>Your prescriptions</h2>
+      <a href="{{ url_for('patient_prescriptions') }}" class="btn-ghost-sm">View all</a>
+    </div>
+    {% if prescriptions %}
+      <ul class="list-plain">
+        {% for p in prescriptions[:5] %}
+          <li style="display:flex; justify-content:space-between; align-items:center">
+            <div>
+              <strong>{{ p.medicine_name }}</strong> <span class="muted">— {{ p.dosage }}</span><br>
+              <small class="muted">Dr. {{ p.doctor_name }}</small>
+            </div>
+            <span class="badge badge-{{ p.status }}"><span class="badge-dot"></span>{{ p.status }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state"><h3>No prescriptions yet</h3></div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="section-head">
+      <h2>Guardians</h2>
+      <a href="{{ url_for('patient_guardians') }}" class="btn-ghost-sm">Manage</a>
+    </div>
+    {% if guardians %}
+      <ul class="list-plain">
+        {% for g in guardians %}
+          <li><strong>{{ g.name }}</strong><br><small class="muted">{{ g.email }}</small></li>
+        {% endfor %}
+      </ul>
+      <p class="muted" style="margin-top:12px; margin-bottom:0; font-size:.82rem">They're notified automatically if you mark a dose "not taken," or if a reminder goes unanswered too long.</p>
+    {% else %}
+      <div class="empty-state">
+        <h3>No guardian linked</h3>
+        <p>Add one so someone's alerted if you miss a dose.</p>
+        <a href="{{ url_for('patient_guardians') }}" class="btn-solid-sm">Add a guardian</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  Dosely.initPatientReminders({
+    dueUrl: "{{ url_for('api_reminders_due') }}",
+    respondUrlTemplate: "{{ url_for('api_reminder_respond', reminder_id=0) }}",
+  });
+</script>
+{% endblock %}
